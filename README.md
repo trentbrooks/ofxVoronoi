@@ -1,4 +1,4 @@
-[!Voronoi Diagram](http://farm8.staticflickr.com/7193/6967101789_519a469cd0_b.jpg)
+![Voronoi Diagram](http://farm8.staticflickr.com/7193/6967101789_519a469cd0_b.jpg)
 
 Simple addon to make voronoi diagrams for openFrameworks. 
 
