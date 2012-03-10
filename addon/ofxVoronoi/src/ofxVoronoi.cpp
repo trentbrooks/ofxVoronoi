@@ -46,6 +46,7 @@ vector<ofPoint>& ofxVoronoi::getPoints() {
 //--------------------------------------------------------------
 bool ofxVoronoi::generateVoronoi() {
    
+    
     bool bMade = false;
     if(pts.size() > 0) {
                 
