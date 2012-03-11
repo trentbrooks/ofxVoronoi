@@ -172,7 +172,7 @@ private:
     void PQdelete(struct Halfedge *he);
     bool ELinitialize();
     void ELinsert(struct	Halfedge *lb, struct Halfedge *newHe);
-    struct Halfedge * VoronoiDiagramGenerator::ELgethash(int b);
+    struct Halfedge * ELgethash(int b);
     struct Halfedge *ELleft(struct Halfedge *he);
     struct Site *leftreg(struct Halfedge *he);
     void out_site(struct Site *s);
@@ -194,10 +194,10 @@ private:
     
     void pushGraphEdge(float x1, float y1, float x2, float y2);
     
-    void VoronoiDiagramGenerator::openpl();
-    void VoronoiDiagramGenerator::line(float x1, float y1, float x2, float y2);
-    void VoronoiDiagramGenerator::circle(float x, float y, float radius);
-    void VoronoiDiagramGenerator::range(float minX, float minY, float maxX, float maxY);
+    void openpl();
+    void line(float x1, float y1, float x2, float y2);
+    void circle(float x, float y, float radius);
+    void range(float minX, float minY, float maxX, float maxY);
     
     
     struct  Freelist	hfl;
