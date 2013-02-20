@@ -1,42 +1,24 @@
-// The algorithm is a modified version of Stephan Fortune's sweep line algorithm
-// http://ect.bell-labs.com/who/sjf/
-
-// Orignal Code from Shane O'Sullivan
-// http://www.skynet.ie/~sos/mapviewer/voronoi.php
-
 #pragma once
-
 #include "ofMain.h"
-#include "VoronoiDiagramGenerator.h"
+#include "Voronoi2D.h"
 
-class ofxVoronoiEdge {
+class ofxVoronoiCell {
   public:
-    ofVec2f a, b;
-    ofxVoronoiEdge(const ofVec2f &ptA, const ofVec2f &ptB) {
-        a.set(ptA);
-        b.set(ptB);
-    }
-    ofxVoronoiEdge(float x1, float y1, float x2, float y2) {
-        a.set(x1, y1);
-        b.set(x2, y2);
-    }
-    void draw() {
-        ofLine(a, b);
-    }
+    vector<ofVec2f>pts;
 };
 
 //--------------------------------------------------------------
-
 class ofxVoronoi {
     
 private:
     
     ofPolyline              pts;
-    VoronoiDiagramGenerator vdg;
     float                   minDistance;
+    ofRectangle             bounds;
     
 public:
 	
+    Voronoi2D v2d;
     ofxVoronoi();
     ~ofxVoronoi();
     
@@ -49,7 +31,8 @@ public:
     
     vector<ofPoint>& getPoints();
     ofRectangle getBounds();
+    void setBounds(float x, float y, float w, float h);
+    void setBounds(const ofRectangle &rect);
     
-    vector <ofxVoronoiEdge> edges;
+    vector <ofxVoronoiCell> cells;
 };
-

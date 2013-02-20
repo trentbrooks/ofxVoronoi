@@ -1,9 +1,10 @@
 #include "ofxVoronoi.h"
 
-
+static int cellColors[10000];
 //--------------------------------------------------------------
 ofxVoronoi::ofxVoronoi() {
-    minDistance = 3;    
+    minDistance = 3;
+    for(int i=0; i<10000; i++) cellColors[i] = ofRandom(255);
 }
 
 //--------------------------------------------------------------
@@ -13,8 +14,7 @@ ofxVoronoi::~ofxVoronoi() {
 
 //--------------------------------------------------------------
 void ofxVoronoi::clear() {
-    edges.clear();
-    vdg.resetIterator();
+    cells.clear();
     pts.clear();
 }
 
@@ -25,7 +25,7 @@ void ofxVoronoi::setMinDistance(float minDis) {
 
 //--------------------------------------------------------------
 void ofxVoronoi::addPoint(float x, float y) {
-    pts.addVertex(x, y);
+    pts.addVertex(x/bounds.width, y/bounds.height);
 }
 
 //--------------------------------------------------------------
@@ -39,6 +39,16 @@ ofRectangle ofxVoronoi::getBounds() {
 }
 
 //--------------------------------------------------------------
+void ofxVoronoi::setBounds(const ofRectangle &rect) {
+    setBounds(rect.x, rect.y, rect.width, rect.height);
+}
+
+//--------------------------------------------------------------
+void ofxVoronoi::setBounds(float x, float y, float w, float h) {
+    bounds.set(x, y, w, h);
+}
+
+//--------------------------------------------------------------
 vector<ofPoint>& ofxVoronoi::getPoints() {
     return pts.getVertices();    
 }
@@ -46,44 +56,46 @@ vector<ofPoint>& ofxVoronoi::getPoints() {
 //--------------------------------------------------------------
 bool ofxVoronoi::generateVoronoi() {
    
-    
-    bool bMade = false;
-    if(pts.size() > 0) {
-                
-        edges.clear();
-        
-        int nPts = (int)pts.size();
-        float xValues[nPts];
-        float yValues[nPts];
-        
-        for (int i=0; i<nPts; i++) {
-            xValues[i] = pts[i].x;
-            yValues[i] = pts[i].y;
-        }
-        
-        ofRectangle bounds = pts.getBoundingBox();
-        float minX = bounds.x;
-        float maxX = bounds.x + bounds.width;
-        float minY = bounds.y;
-        float maxY = bounds.y + bounds.height;
-        
-        bMade = vdg.generateVoronoi(xValues, yValues, nPts, minX, maxX, minY, maxY, minDistance);
-        vdg.resetIterator();
-        
-        float x1,y1,x2,y2;
-        while(vdg.getNext(x1,y1,x2,y2)) {
-            edges.push_back(ofxVoronoiEdge(x1, y1, x2, y2));
-        }
-        
-    } 
-    else {
-        ofLog(OF_LOG_WARNING, "need points to generate voronoi\n");
+    cells.clear();
+    v2d.setup(bounds.x/bounds.width,
+              bounds.x/bounds.width+1,
+              bounds.y/bounds.height,
+              bounds.y/bounds.height+1,10,10,16);
+
+    for (int i=0; i<pts.size(); i++) {
+        v2d.put(i, pts[i].x, pts[i].y);
     }
     
-    return bMade;
+    float x = 0;
+    float y = 0;
+    float w = bounds.width;
+    float h = bounds.height;
+        
+    if(v2d.start()) {
+        do {
+            if(v2d.computeCell()) {
+                cells.push_back(ofxVoronoiCell());
+                do {
+                    v2d.getCellPoint(x,y);
+                    cells.back().pts.push_back(ofVec2f(x*w,y*h));
+                } while(v2d.cellHasEdges());
+            }
+        } while(v2d.next());
+    }
 }
 
 //--------------------------------------------------------------
 void ofxVoronoi::draw() {
     
+    for(int i=0; i<cells.size(); i++) {
+        ofPath path;
+        path.setFillColor(cellColors[i]);
+        path.setStrokeColor(ofColor(255, 255, 0));
+        path.setStrokeWidth(1);
+        for(int j=0; j<cells[i].pts.size(); j++) {
+            path.lineTo(cells[i].pts[j]);
+        }
+        path.draw();
+    }
+  
 }
